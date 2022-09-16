@@ -70,7 +70,7 @@ Read a file regurarly. I always forget how this works.
 vim.fn.chdir("~/fakeroot/doc/notes/md")
 print(vim.fn.getcwd())
 ```
-```output[37](09/16/22 15:30:39)
+```output[1](09/16/22 16:03:22)
 C:\Users\Julien\fakeroot\doc\notes\md
 ```
 
@@ -79,12 +79,12 @@ C:\Users\Julien\fakeroot\doc\notes\md
 f = io.open("threading.md")
 print(f)
 ```
-```output[53](09/16/22 15:40:06)
-file (0x02878dd31640)
+```output[2](09/16/22 16:03:25)
+file (0x01c1e4cf6d20)
 ```
 
 Using "*a", the file is read entirely at once. It is just a
-giant string. It can be broken down into a table of lines as well.
+single string. It can be broken down into a table of lines as well.
 
 ```lua
 content = f:read("*a")
@@ -146,3 +146,55 @@ print(#lines)
 ```
 
 This works well as expected. This could now extended to load multiple files in parallel.
+
+## Loading multiple files
+
+This will load the files contained in my RFC folder. It is a list of text files.
+
+```lua
+vim.fn.chdir("~/fakeroot/doc/wiki")
+files = vim.split(vim.fn.glob("*.txt"), "\n")
+print(#files)
+```
+```output[3](09/16/22 16:03:32)
+314
+```
+
+
+```lua
+print(files[2])
+print(vim.inspect(io.open(files[2])))
+```
+```output[80](09/16/22 16:02:12)
+2021_02_06_21_37_56.txt
+nil
+```
+
+Let's benchmark the time to load the files sequentially and then load them all in parallel and compare.
+This could be interesting.
+
+
+```lua
+local all_files = {}
+
+local start_time = vim.fn.reltime()
+
+for _, fn in ipairs(files) do
+  local f = io.open(fn)
+  if f then
+    local content = f:read("*a")
+    f:close()
+    local lines = vim.split(content, "\n")
+    table.insert(all_files, lines)
+  end
+end
+
+local end_time = vim.fn.reltime(start)
+print(#all_files)
+print(("elapsed: %g"):format(vim.fn.reltimefloat(end_time)))
+```
+```output[7](09/16/22 16:04:38)
+314
+elapsed: 0
+```
+

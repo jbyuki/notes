@@ -12,15 +12,18 @@ print(swan.version())
 Find what $sin^3(x)$ is equal to in simpler
 terms with swan.lua.
 
+Go into the complex domain with $sin(x)\,=\,\frac{e^{ix} -\, e^{-ix}}{2i}$
+
 ```lua
 x = swan.sym "x"
 y = swan.sym "y"
 cosx = ((swan.e ^ (swan.i * x) + swan.e ^ (-swan.i * x)))/2
 sinx = ((swan.e ^ (swan.i * x) - swan.e ^ (-swan.i * x)))/(2*swan.i)
 -- exp = (cosx*cosx):simplify()
-exp = (sinx*sinx*sinx):simplify():expand()
-print(exp)
+exp = (sinx*sinx):simplify():expand()
+num = exp.o.lhs
+print(num:expand())
 ```
-```output[2](09/23/22 23:16:04)
-(3(-(e^((-i)x)))(e^(ix))^2 + 3(-(e^((-i)x)))^2(e^(ix)) + (-(e^((-i)x)))^3 + (e^(ix))^3)/(2i^3)
+```output[9](09/23/22 23:56:50)
+2(-(e^((-i)x)))(e^(ix)) + (-(e^((-i)x)))^2 + (e^(ix))^2
 ```

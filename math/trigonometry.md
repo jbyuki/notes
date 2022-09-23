@@ -12,7 +12,7 @@ print(swan.version())
 Find what $sin^3(x)$ is equal to in simpler
 terms with swan.lua.
 
-Go into the complex domain with $sin(x)\,=\,\frac{e^{ix} -\, e^{-ix}}{2i}$
+Go into the complex domain with $sin(x)=\frac{e^{ix} - e^{-ix}}{2i}$
 
 ```lua
 x = swan.sym "x"

@@ -29,8 +29,8 @@ vim.fn.chdir("~/fakeroot/doc/wiki")
 dir = vim.loop.fs_opendir(".", nil, 10)
 print(dir)
 ```
-```output[29](09/16/22 16:44:01)
-uv_dir_t: 0x01c76ad94e20
+```output[39](09/16/22 17:10:16)
+uv_dir_t: 0x01c76ff39378
 ```
 
 
@@ -52,8 +52,38 @@ print(vim.inspect(entries))
 local entries = dir:readdir()
 print(vim.inspect(entries))
 ```
-```output[14](09/16/22 16:32:02)
-nil
+```output[38](09/16/22 17:10:04)
+{ {
+    name = "2021_02_05_16_55_03.txt",
+    type = "file"
+  }, {
+    name = "2021_02_06_21_37_56.txt",
+    type = "file"
+  }, {
+    name = "2021_02_10_10_34_12.txt",
+    type = "file"
+  }, {
+    name = "2021_02_13_16_01_00.txt",
+    type = "file"
+  }, {
+    name = "2021_02_14_18_52_27.txt",
+    type = "file"
+  }, {
+    name = "2021_02_14_19_17_30.txt",
+    type = "file"
+  }, {
+    name = "2021_02_15_16_15_47.txt",
+    type = "file"
+  }, {
+    name = "2021_02_15_22_42_04.txt",
+    type = "file"
+  }, {
+    name = "2021_02_15_23_14_51.txt",
+    type = "file"
+  }, {
+    name = "2021_02_16_13_22_54.txt",
+    type = "file"
+  } }
 ```
 
 ## Recursive 
@@ -80,11 +110,11 @@ function open_dir(path, files)
   end
 end
 
-local all_files = {}
+all_files = {}
 open_dir(".", all_files)
 print(#all_files)
 ```
-```output[34](09/16/22 16:45:03)
+```output[43](09/16/22 17:10:42)
 317
 ```
 
@@ -99,8 +129,8 @@ end
 local elapsed = vim.fn.reltimefloat(vim.fn.reltime(start))
 print(elapsed)
 ```
-```output[33](09/16/22 16:44:34)
-0.3517121
+```output[37](09/16/22 17:09:54)
+0.3803573
 ```
 
 
@@ -117,3 +147,10 @@ print(elapsed)
 0.0055646
 ```
 
+
+```lua
+print(all_files[1]:match("%.([^.]*)$"))
+```
+```output[50](09/16/22 17:12:45)
+txt
+```

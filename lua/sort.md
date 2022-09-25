@@ -1,6 +1,5 @@
 Sorting a table.
 
-
 ```lua
 a = {4,3,2,1}
 table.sort(a)

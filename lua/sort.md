@@ -1,7 +1,7 @@
 Sorting a table.
 
 ```lua
-a = {4,3,2,1}
+a = {4,3,2,2}
 table.sort(a)
 print(vim.inspect(a))
 ```

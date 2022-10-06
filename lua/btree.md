@@ -365,9 +365,9 @@ print(T)
 
 ### Searching a B-tree
 
-This is the easiest method of all. Very similar to 
-a binary tree, it will search through the tree recursively.
-
+The search is very similar to a binary tree, 
+it will search through the tree recursively. Because
+the keys are ordered, it can be done in a single pass.
 
 ```lua
 function btree.search_node(node, k)
@@ -414,3 +414,193 @@ print(T:search(101))
 ```
 
 ### Deleting a key from the B-tree
+
+
+```lua
+function btree.delete_nonmin(node, k, leftmost, rightmost)
+  if node.leaf then
+    if leftmost then
+      k = node.keys[1]
+      table.remove(node.keys, 1)
+      node.n = node.n - 1
+      return k
+    elseif rightmost then
+      k = node.keys[node.n]
+      table.remove(node.keys)
+      node.n = node.n - 1
+      return k
+    end
+  end
+
+  local i = 1
+  if leftmost then
+    i = 1
+  elseif rightmost then
+    i = node.n+1
+  else
+    while i <= node.n and k > node.keys[i] do
+      i = i + 1
+    end
+  end
+
+  if not leftmost and not rightmost and i <= node.n and k == node.keys[i] then
+    -- case 1
+    if node.leaf then
+      table.remove(node.keys, i)
+      node.n = node.n - 1
+      return k
+    -- case 2
+    else
+      -- case 2a
+      if #node.children[i].keys >= t then
+        local kp = btree.delete_nonmin(node.children[i], false, true)
+        node.keys[i] = kp
+        return k
+      -- case 2b
+      elseif #node.children[i+1].keys >= t then
+        local kp = btree.delete_nonmin(node.children[i], true, false)
+        node.keys[i] = kp
+        return k
+      -- case 2c
+      else
+        local left_child = node.children[i]
+        local right_child = node.children[i+1]
+
+        for j=i+1,node.n do
+          node.children[j] = node.children[j+1]
+        end
+
+        for j=i,node.n-1 do
+          node.keys[i] = node.keys[i+1]
+        end
+
+        node.n = node.n - 1
+
+        left_child.keys[left_child.n+1] = k
+        left_child.n = left_child.n + 1
+
+        for j=1,right_child.n+1 do
+          left_child.children[left_child.n+j] = right_child.children[j]
+        end
+
+        for j=1,right_child.n do
+          left_child.keys[left_child.n+j] = right_child.keys[j]
+        end
+
+        left_child.n = left_child.n + right_child.n
+        return btree.delete_nonmin(left_child, k)
+      end
+    end
+  -- case 3
+  else
+    -- case 3a
+    if #node.children[i].keys == t-1  then
+      if node.children[i+1] and node.children[i+1].n >= t then
+        local left_child = node.children[i]
+        local right_child = node.children[i+1]
+
+        left_child.keys[left_child.n+1] = node.keys[i]
+        left_child.n = left_child.n + 1
+
+        left_child.children[left_child.n+1] = right_child.children[1]
+        node.keys[i] = right_child.keys[1]
+
+        for j=1,right_child.n-1 do
+          right_child.keys[j] = right_child.keys[j+1]
+        end
+
+        for j=1,right_child.n do
+          right_child.children[j] = right_child.children[j+1]
+        end
+
+        right_child.n = right_child.n - 1
+      elseif node.children[i-1] and node.children[i-1].n >= t then
+        local left_child = node.children[i-1]
+        local right_child = node.children[i]
+
+        for j=right_child.n+1,2,-1 do
+          right_child.keys[j] = right_child.keys[j-1]
+        end
+
+        for j=right_child.n+2,2,-1 do
+          right_child.children[j] = right_child.children[j-1]
+        end
+
+        right_child.n = right_child.n + 1
+
+        right_child.keys[1] = node.keys[i-1]
+        right_child.children[1] = left_child.children[left_child.n+1]
+        node.keys[i-1] = left_child.keys[left_child.n]
+
+        left_child.n = left_child.n - 1
+
+      -- case 3b
+      elseif node.children[i+1] then
+        local left_child = node.children[i]
+        local right_child = node.children[i+1]
+
+        left_child.keys[left_child.n+1] = node.keys[i]
+        left_child.n = left_child.n + 1
+
+
+        for j=1,right_child.n do
+          left_child.keys[left_child.n+j] = right_child.keys[j]
+        end
+
+        for j=1,right_child.n+1 do
+          left_child.children[left_child.n+j+1] = right_child.children[j]
+        end
+
+        left_child.n = left_child.n + right_child.n
+
+        for j=i,node.n-1 do
+          node.keys[j] = node.keys[j+1]
+        end
+
+        for j=i+1,node.n do
+          node.children[j] = node.children[j+1]
+        end
+
+        node.n = node.n - 1
+
+      elseif node.children[i-1] then
+        local left_child = node.children[i-1]
+        local right_child = node.children[i]
+
+        for j=right_child.n,1,-1 do
+          right_child.keys[j+1+left_child.n] = right_child.keys[j]
+        end
+
+        for j=right_child.n+1,1,-1 do
+          right_child.children[j+1+left_child.n] = right_child.children[j]
+        end
+
+        right_child.keys[left_child.n+1] = node.keys[i]
+        right_child.n = right_child.n + 1 + left_child.n
+
+        for j=1,left_child.n do
+          right_child.keys[j] = left_child.keys[j]
+        end
+
+        for j=1,left_child.n+1 do
+          right_child.children[j] = left_child.children[j]
+        end
+
+        for j=i,node.n-1 do
+          node.keys[j] = node.keys[j+1]
+        end
+
+        for j=i-1,node.n do
+          node.children[j] = node.keys[j+1]
+        end
+
+        node.n = node.n - 1
+      end
+    end
+    return btree.delete_nonmin(node.children[i], k)
+  end
+end
+```
+```output[55](10/07/22 01:39:34)
+```
+

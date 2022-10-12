@@ -3,75 +3,80 @@ Effect of the scale matrix
 
 ```lua
 swan = require"swan"
+swan.clear_syms()
 
-e1x = swan.sym "e1x"
-e1y = swan.sym "e1y"
-e1z = swan.sym "e1z"
+c2w_i_R = swan.sym "c2w_i_R"
+c2w_i_t = swan.sym "c2w_i_t"
 
-e2x = swan.sym "e2x"
-e2y = swan.sym "e2y"
-e2z = swan.sym "e2z"
+c2w_j_R = swan.sym "c2w_j_R"
+c2w_j_t = swan.sym "c2w_j_t"
 
-e3x = swan.sym "e3x"
-e3y = swan.sym "e3y"
-e3z = swan.sym "e3z"
+g2c_R = swan.sym "g2c_R"
+g2c_t = swan.sym "g2c_t"
 
-tx = swan.sym "tx"
-ty = swan.sym "ty"
-tz = swan.sym "tz"
+b2g_i_R = swan.sym "b2g_i_R"
+b2g_i_t = swan.sym "b2g_i_t"
+
+b2g_j_R = swan.sym "b2g_j_R"
+b2g_j_t = swan.sym "b2g_j_t"
+
+S = swan.sym "S"
+
+c2w_i = swan.mat {
+  { c2w_i_R, c2w_i_t },
+  { 0, 1 },
+}
+
+c2w_j = swan.mat {
+  { c2w_j_R, c2w_j_t },
+  { 0, 1 },
+}
+
+g2c = swan.mat {
+  { S*g2c_R, g2c_t },
+  { 0, 1 },
+}
+
+b2g_i = swan.mat {
+  { b2g_i_R , b2g_i_t },
+  { 0, 1 },
+}
+
+b2g_j = swan.mat {
+  { b2g_j_R , b2g_j_t },
+  { 0, 1 },
+}
+
 ```
-```output[9](09/30/22 15:28:22)
+```output[24](10/12/22 14:06:18)
 ```
 
 ```lua
-A = swan.mat {
-  {e1x, e2x, e3x, tx},
-  {e1y, e2y, e3y, ty},
-  {e1z, e2z, e3z, tz},
-  {0, 0, 0, 1}
-}
-print(A)
+r1 = (c2w_i * g2c ):simplify()
+print(r1)
+r2 = (r1 * b2g_i):simplify()
+print(r2)
 ```
-```output[10](09/30/22 15:28:25)
+```output[27](10/12/22 14:07:00)
 [
-  e1x, e2x, e3x, tx
-  e1y, e2y, e3y, ty
-  e1z, e2z, e3z, tz
-  0, 0, 0, 1
+  Sc2w_i_Rg2c_R, c2w_i_Rg2c_t + c2w_i_t
+  0, 1
+]
+[
+  Sb2g_i_Rc2w_i_Rg2c_R, Sb2g_i_tc2w_i_Rg2c_R + c2w_i_Rg2c_t + c2w_i_t
+  0, 1
 ]
 ```
 
 
 ```lua
-sx = swan.sym "sx"
-sy = swan.sym "sy"
-sz = swan.sym "sz"
-S = swan.mat {
-  {sx, 0, 0, 0},
-  {0, sy, 0, 0},
-  {0, 0, sz, 0},
-  {0, 0, 0, 1}
-}
-print(S)
+print((S*A):simplify():normalize())
 ```
-```output[13](09/30/22 15:29:04)
+```output[14](10/12/22 13:36:47)
 [
-  sx, 0, 0, 0
-  0, sy, 0, 0
-  0, 0, sz, 0
-  0, 0, 0, 1
-]
-```
-
-
-```lua
-print((A*S):simplify():normalize())
-```
-```output[14](09/30/22 15:29:07)
-[
-  e1xsx, e2xsy, e3xsz, tx
-  e1ysx, e2ysy, e3ysz, ty
-  e1zsx, e2zsy, e3zsz, tz
+  e1xsx, e2xsx, e3xsx, sxtx
+  e1ysy, e2ysy, e3ysy, syty
+  e1zsz, e2zsz, e3zsz, sztz
   0, 0, 0, 1
 ]
 ```

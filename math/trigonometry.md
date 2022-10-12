@@ -6,9 +6,14 @@ terms with swan.lua.
 Go into the complex domain with $sin(x)=\frac{e^{ix} - e^{-ix}}{2i}$
 
 ```lua
-a = 2
+a = 3
+local g = 2
+if true then
+end
+print(g)
 ```
-```output[1](10/06/22 22:41:02)
+```output[6](10/08/22 22:57:37)
+2
 ```
 
 ```lua

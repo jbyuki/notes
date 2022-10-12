@@ -58,7 +58,7 @@ of keys it contains n, and the pointer to the children.
 
 ```lua
 btree = {}
-t = 2
+t = 3
 mt = { __index = btree }
 function btree.new()
   local o = {}
@@ -72,7 +72,7 @@ function btree.new()
   return setmetatable(o,mt)
 end
 ```
-```output[1](10/06/22 23:29:41)
+```output[1](10/11/22 22:49:43)
 ```
 
 Create a tree T which will be used for testing throughout.
@@ -82,7 +82,7 @@ Create a tree T which will be used for testing throughout.
 T = btree.new()
 print(vim.inspect(T))
 ```
-```output[2](10/06/22 23:29:41)
+```output[2](10/11/22 22:49:47)
 {
   root = {
     children = {},
@@ -130,7 +130,7 @@ function btree.new_node()
   }
 end
 ```
-```output[3](10/06/22 23:29:41)
+```output[3](10/11/22 22:49:51)
 ```
 
 Now the function to split, the child indexed at child_i is split into
@@ -174,7 +174,7 @@ function btree.split(parent, child_i)
   parent.n = parent.n + 1
 end
 ```
-```output[4](10/06/22 23:29:41)
+```output[4](10/11/22 22:49:55)
 ```
 
 #### Inserting key into a B-tree in a single pass
@@ -202,7 +202,7 @@ function btree:insert(k)
   end
 end
 ```
-```output[5](10/06/22 23:29:41)
+```output[5](10/11/22 22:49:58)
 ```
 
 And now the procedure for the non-full node key insertion. This adds the key in case
@@ -241,7 +241,7 @@ function btree.insert_nonfull(node, k)
   end
 end
 ```
-```output[6](10/06/22 23:29:41)
+```output[6](10/11/22 22:50:00)
 ```
 
 The insertion code is now done. We will now to see what the results
@@ -267,7 +267,7 @@ function btree.print_node(lines, node, depth)
   end
 end
 ```
-```output[7](10/06/22 23:29:41)
+```output[7](10/11/22 22:50:05)
 ```
 
 Then a metamethod for string formatting so that the tree can be directly
@@ -281,7 +281,7 @@ function mt.__tostring(tree)
   return table.concat(lines, "\n")
 end
 ```
-```output[8](10/06/22 23:29:41)
+```output[8](10/11/22 22:50:08)
 ```
 
 Printing the empty tree should yield nothing.
@@ -290,7 +290,7 @@ Printing the empty tree should yield nothing.
 ```lua
 print(T)
 ```
-```output[9](10/06/22 23:29:41)
+```output[9](10/11/22 22:50:10)
 ```
 
 
@@ -301,7 +301,7 @@ T = btree.new()
 T:insert(3)
 print(T)
 ```
-```output[10](10/06/22 23:29:41)
+```output[10](10/11/22 22:50:12)
 3
 ```
 
@@ -332,33 +332,18 @@ print(T)
 Let's try to insert the number in an increasing order and see the result
 
 ```lua
-T = btree.new()
-for i=1,20 do
-  T:insert(i)
+local start = vim.fn.reltime()
+for m=1,1000 do
+  local T = btree.new()
+  for i=1,1000 do
+    T:insert(i)
+  end
 end
-print(T)
+local elapsed = vim.fn.reltimefloat(vim.fn.reltime(start))
+print(elapsed)
 ```
-```output[26](10/06/22 23:31:24)
-      1
-    2
-      3
-  4
-      5
-    6
-      7
-8
-      9
-    10
-      11
-  12
-      13
-    14
-      15
-    16
-      17
-    18
-      19
-      20
+```output[19](10/11/22 23:13:02)
+0.9027144
 ```
 
 **Why does the tree have this shape?**

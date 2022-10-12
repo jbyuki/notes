@@ -10,6 +10,7 @@ balanced trees](https://15721.courses.cs.cmu.edu/spring2018/papers/08-oltpindexe
 
 ## Description
 
+```
  HEADS
                      ┏━━━━━━━┓                             ╔═══════╗
   ╔═╗                ┃   │   ┃                             ║       ║
@@ -21,6 +22,7 @@ balanced trees](https://15721.courses.cs.cmu.edu/spring2018/papers/08-oltpindexe
   ╔═╗    ┃ 3 │   ┃   ┃   │   ┃    ┃ 7 │   ┃   ┃ 9 │   ┃    ║       ║
   ╚═╝───►┗━━━━━━━┛─► ┗━━━━━━━┛───►┗━━━━━━━┛──►┗━━━━━━━┛───►╚═══════╝
 
+```
 
 Skiplists are a probabilisitc alternative to balanced trees. 
 

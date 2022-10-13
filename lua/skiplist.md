@@ -311,3 +311,19 @@ print(elapsed)
 ```
 
 Where for the same result with b-trees, it took `0.9027144`.
+
+**Note 1**: Further benchmarking in a naive c implementation show 
+that b-trees are clear winners for insertion `0.049` vs `0.228` 
+with optimized builds. But this might be due to a wrong implementation 
+as well.
+
+**Note 2**: After some investivation by using said very performant
+[implementation](https://github.com/begeekmyfriend/skiplist), I get 
+the same performance approx. with my implementation. B-trees are still
+clear winners. The other possibility is that my b-tree implementation
+is wrong.
+
+**Note 3**: After verifying the output, b-trees seem correct. The
+gain is non-negligeable... This might be just a weird case because
+the keys are inserted in order, but still the skiplists are not 
+very convincing, despite the very attractive simplicity of the implementation.

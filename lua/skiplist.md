@@ -289,3 +289,25 @@ print(L:search(3))
 true
 false
 ```
+
+## Benchmarking
+
+Finally some benchmarking to compare very approximatively with b-trees.
+A better comparaison is done in the paper directly.
+
+```lua
+local start = vim.fn.reltime()
+for m=1,1000 do
+  local L = skiplist.new()
+  for i=1,1000 do
+    L:insert(i)
+  end
+end
+local elapsed = vim.fn.reltimefloat(vim.fn.reltime(start))
+print(elapsed)
+```
+```output[155](10/13/22 08:43:25)
+0.897807
+```
+
+Where for the same result with b-trees, it took `0.9027144`.

@@ -47,7 +47,7 @@ MAX_LEVEL = 20
 N = (1/p)^MAX_LEVEL
 print(N)
 ```
-```output[137](10/13/22 08:38:48)
+```output[119](10/13/22 08:23:59)
 1048576
 ```
 
@@ -77,7 +77,7 @@ function skiplist.new()
   }, mt)
 end
 ```
-```output[138](10/13/22 08:38:48)
+```output[120](10/13/22 08:23:59)
 ```
 
 
@@ -107,7 +107,7 @@ function skiplist:insert(key)
   end
 end
 ```
-```output[139](10/13/22 08:38:48)
+```output[121](10/13/22 08:23:59)
 ```
 
 The random_level() will choose a level for the new node.
@@ -122,7 +122,7 @@ function skiplist.random_level()
   return lvl
 end
 ```
-```output[140](10/13/22 08:38:48)
+```output[122](10/13/22 08:23:59)
 ```
 
 Let's try the function a few times
@@ -133,17 +133,17 @@ for i=1,10 do
   print(("%d ( %g %% chance )"):format(lvl, math.floor((p^lvl)*10000)/100))
 end
 ```
-```output[141](10/13/22 08:38:48)
+```output[123](10/13/22 08:23:59)
 1 ( 50 % chance )
 1 ( 50 % chance )
 1 ( 50 % chance )
+5 ( 3.12 % chance )
 1 ( 50 % chance )
 2 ( 25 % chance )
-2 ( 25 % chance )
-2 ( 25 % chance )
+1 ( 50 % chance )
 3 ( 12.5 % chance )
-1 ( 50 % chance )
 2 ( 25 % chance )
+1 ( 50 % chance )
 ```
 
 new_node() will create a new empty node.
@@ -157,7 +157,7 @@ function skiplist.new_node(key)
   }
 end
 ```
-```output[142](10/13/22 08:38:48)
+```output[124](10/13/22 08:23:59)
 ```
 
 A regular printing routine.
@@ -173,7 +173,7 @@ function mt:__tostring()
   return table.concat(keys, ", ")
 end
 ```
-```output[143](10/13/22 08:38:48)
+```output[131](10/13/22 08:25:06)
 ```
 
 Testing the insertion of keys.
@@ -185,7 +185,7 @@ for i=1,20 do
 end
 print(L)
 ```
-```output[144](10/13/22 08:38:48)
+```output[133](10/13/22 08:25:12)
 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20
 ```
 
@@ -215,77 +215,11 @@ function skiplist:delete(key)
       end
       update[i].forward[i] = x.forward[i]
     end
-
-    while self.level > 1 do
-      if not self.header.forward[self.level].forward then
-        self.level = self.level - 1
-      else
-        break
-      end
-    end
   end
 end
-```
-```output[145](10/13/22 08:38:48)
 ```
 
 In the deletion process, see the drawing at the beginning,
 if a node in update[i] is not linked to x, any other node
 above in update will not be linked to x thus we can break
 immediatly.
-
-Let's test the method.
-
-
-```lua
-local L = skiplist.new()
-for i=1,20 do
-  L:insert(i)
-end
-L:delete(20)
-L:delete(10)
-L:delete(3)
-print(L)
-```
-```output[149](10/13/22 08:39:10)
-1, 2, 4, 5, 6, 7, 8, 9, 11, 12, 13, 14, 15, 16, 17, 18, 19
-```
-
-## Searching
-
-The last method implemented here is searching. Thanks to
-the links in the levels, it should be sublinear.
-
-It returns true if the key is in the list, false otherwise.
-
-```lua
-function skiplist:search(key)
-  local x = self.header
-  for i=self.level,1,-1 do
-    while x.forward[i].key < key do
-      x = x.forward[i]
-    end
-  end
-  x = x.forward[1]
-  return x.key == key
-end
-```
-```output[152](10/13/22 08:41:57)
-```
-
-
-```lua
-local L = skiplist.new()
-for i=1,20 do
-  L:insert(i)
-end
-L:delete(20)
-L:delete(10)
-L:delete(3)
-print(L:search(4))
-print(L:search(3))
-```
-```output[153](10/13/22 08:41:58)
-true
-false
-```

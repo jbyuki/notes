@@ -44,10 +44,10 @@ The output is the maximum number of elements.
 ```lua
 p = 0.5
 MAX_LEVEL = 20
-N = (1/p)^max_level
+N = (1/p)^MAX_LEVEL
 print(N)
 ```
-```output[55](10/13/22 00:16:01)
+```output[119](10/13/22 08:23:59)
 1048576
 ```
 
@@ -56,20 +56,28 @@ Let's create the skip list structure.
 ```lua
 MAX_KEY = math.huge
 
-local skiplist = {}
-
+skiplist = {}
+mt = { __index = skiplist }
 function skiplist.new()
-  return {
-    header = {
-      forward = { {
-        key = MAX_KEY
-      } }
-    },
-    level = 1
+  local header = {
+    forward = {}
   }
+
+  local nil_element = {
+    key = MAX_KEY
+  }
+
+  for i=1,MAX_LEVEL do
+    table.insert(header.forward, nil_element)
+  end
+
+  return setmetatable({
+    header = header,
+    level = 1
+  }, mt)
 end
 ```
-```output[28](10/13/22 00:08:42)
+```output[120](10/13/22 08:23:59)
 ```
 
 
@@ -87,7 +95,7 @@ function skiplist:insert(key)
   local lvl = skiplist.random_level()
   if lvl > self.level then
     for i=self.level+1,lvl do
-      update[i] = list.header
+      update[i] = self.header
     end
     self.level = lvl
   end
@@ -99,7 +107,7 @@ function skiplist:insert(key)
   end
 end
 ```
-```output[29](10/13/22 00:08:45)
+```output[121](10/13/22 08:23:59)
 ```
 
 The random_level() will choose a level for the new node.
@@ -108,13 +116,13 @@ The random_level() will choose a level for the new node.
 ```lua
 function skiplist.random_level()
   local lvl = 1
-  while math.random() < p and lvl < max_level do
+  while math.random() < p and lvl < MAX_LEVEL do
     lvl = lvl + 1
   end
   return lvl
 end
 ```
-```output[30](10/13/22 00:08:47)
+```output[122](10/13/22 08:23:59)
 ```
 
 Let's try the function a few times
@@ -125,16 +133,16 @@ for i=1,10 do
   print(("%d ( %g %% chance )"):format(lvl, math.floor((p^lvl)*10000)/100))
 end
 ```
-```output[31](10/13/22 00:08:49)
+```output[123](10/13/22 08:23:59)
+1 ( 50 % chance )
+1 ( 50 % chance )
 1 ( 50 % chance )
 5 ( 3.12 % chance )
 1 ( 50 % chance )
 2 ( 25 % chance )
-2 ( 25 % chance )
+1 ( 50 % chance )
 3 ( 12.5 % chance )
-1 ( 50 % chance )
-1 ( 50 % chance )
-1 ( 50 % chance )
+2 ( 25 % chance )
 1 ( 50 % chance )
 ```
 
@@ -149,6 +157,35 @@ function skiplist.new_node(key)
   }
 end
 ```
-```output[32](10/13/22 00:08:51)
+```output[124](10/13/22 08:23:59)
+```
+
+A regular printing routine.
+
+```lua
+function mt:__tostring()
+  local elem = self.header.forward[1]
+  local keys = {}
+  while elem.forward do
+    table.insert(keys, tostring(elem.key))
+    elem = elem.forward[1]
+  end
+  return table.concat(keys, ", ")
+end
+```
+```output[131](10/13/22 08:25:06)
+```
+
+Testing the insertion of keys.
+
+```lua
+local L = skiplist.new()
+for i=1,20 do
+  L:insert(i)
+end
+print(L)
+```
+```output[133](10/13/22 08:25:12)
+1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20
 ```
 

@@ -12,7 +12,8 @@ int unused;
 
 int main()
 {
-	int a, b;
+	int a;
+	int b;
 	int c = a + b;
 }
 ]]
@@ -20,8 +21,8 @@ int main()
 str = table.concat(vim.split(str, "\n"))
 print(str)
 ```
-```output[39](10/16/22 11:05:15)
-int unused;int main(){	int a, b;	int c = a + b;}
+```output[75](10/16/22 11:18:46)
+int unused;int main(){	int a;	int b;	int c = a + b;}
 ```
 
 The parser is created. New neovim versions allow to
@@ -33,7 +34,7 @@ The neovim version used for this document is:
 ```lua
 print(vim.inspect(vim.version()))
 ```
-```output[4](10/16/22 10:30:15)
+```output[76](10/16/22 11:18:46)
 {
   api_compatible = 0,
   api_level = 10,
@@ -52,7 +53,7 @@ The string parser is created.
 parser = vim.treesitter.get_string_parser(str, "c")
 print(vim.inspect(parser))
 ```
-```output[40](10/16/22 11:05:23)
+```output[77](10/16/22 11:18:46)
 {
   _callbacks = {
     bytes = {},
@@ -81,7 +82,7 @@ print(vim.inspect(parser))
   _opts = {},
   _parser = <userdata 2>,
   _regions = {},
-  _source = "int unused;int main(){\tint a, b;\tint c = a + b;}",
+  _source = "int unused;int main(){\tint a;\tint b;\tint c = a + b;}",
   _trees = {},
   _valid = false,
   <metatable> = <3>{
@@ -125,8 +126,8 @@ tree = tree[1]
 root = tree:root()
 print(root:sexpr())
 ```
-```output[41](10/16/22 11:05:29)
-(translation_unit (declaration type: (primitive_type) declarator: (identifier)) (function_definition type: (primitive_type) declarator: (function_declarator declarator: (identifier) parameters: (parameter_list)) body: (compound_statement (declaration type: (primitive_type) declarator: (identifier) declarator: (identifier)) (declaration type: (primitive_type) declarator: (init_declarator declarator: (identifier) value: (binary_expression left: (identifier) right: (identifier)))))))
+```output[78](10/16/22 11:18:46)
+(translation_unit (declaration type: (primitive_type) declarator: (identifier)) (function_definition type: (primitive_type) declarator: (function_declarator declarator: (identifier) parameters: (parameter_list)) body: (compound_statement (declaration type: (primitive_type) declarator: (identifier)) (declaration type: (primitive_type) declarator: (identifier)) (declaration type: (primitive_type) declarator: (init_declarator declarator: (identifier) value: (binary_expression left: (identifier) right: (identifier)))))))
 ```
 
 Create a search pattern to detect the main function and its body.
@@ -163,12 +164,17 @@ for child, _ in body_node:iter_children() do
 	local row1, col1, row2, col2 = child:range() -- range of the capture
 	local type = child:type()
 	if type ~= "{" and type ~= "}" then
+		print(child:field("type")[1]:sexpr())
 		local txt = str:sub(col1+1, col2)
 		print(txt, ("."):rep(10), child:sexpr())
 	end
 end
 ```
-```output[72](10/16/22 11:15:32)
-int a, b; .......... (declaration type: (primitive_type) declarator: (identifier) declarator: (identifier))
+```output[88](10/16/22 11:33:31)
+(primitive_type)
+int a; .......... (declaration type: (primitive_type) declarator: (identifier))
+(primitive_type)
+int b; .......... (declaration type: (primitive_type) declarator: (identifier))
+(primitive_type)
 int c = a + b; .......... (declaration type: (primitive_type) declarator: (init_declarator declarator: (identifier) value: (binary_expression left: (identifier) right: (identifier))))
 ```

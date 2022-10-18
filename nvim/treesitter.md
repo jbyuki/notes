@@ -14,6 +14,7 @@ int main()
 {
 	int a;
 	int b;
+	int d;
 	int c = a + b;
 }
 ]]
@@ -21,8 +22,8 @@ int main()
 str = table.concat(vim.split(str, "\n"))
 print(str)
 ```
-```output[75](10/16/22 11:18:46)
-int unused;int main(){	int a;	int b;	int c = a + b;}
+```output[7](10/18/22 00:52:43)
+int unused;int main(){	int a;	int b;	int d;	int c = a + b;}
 ```
 
 The parser is created. New neovim versions allow to
@@ -34,7 +35,7 @@ The neovim version used for this document is:
 ```lua
 print(vim.inspect(vim.version()))
 ```
-```output[76](10/16/22 11:18:46)
+```output[8](10/18/22 00:52:43)
 {
   api_compatible = 0,
   api_level = 10,
@@ -53,7 +54,7 @@ The string parser is created.
 parser = vim.treesitter.get_string_parser(str, "c")
 print(vim.inspect(parser))
 ```
-```output[77](10/16/22 11:18:46)
+```output[9](10/18/22 00:52:43)
 {
   _callbacks = {
     bytes = {},
@@ -82,7 +83,7 @@ print(vim.inspect(parser))
   _opts = {},
   _parser = <userdata 2>,
   _regions = {},
-  _source = "int unused;int main(){\tint a;\tint b;\tint c = a + b;}",
+  _source = "int unused;int main(){\tint a;\tint b;\tint d;\tint c = a + b;}",
   _trees = {},
   _valid = false,
   <metatable> = <3>{
@@ -126,8 +127,8 @@ tree = tree[1]
 root = tree:root()
 print(root:sexpr())
 ```
-```output[78](10/16/22 11:18:46)
-(translation_unit (declaration type: (primitive_type) declarator: (identifier)) (function_definition type: (primitive_type) declarator: (function_declarator declarator: (identifier) parameters: (parameter_list)) body: (compound_statement (declaration type: (primitive_type) declarator: (identifier)) (declaration type: (primitive_type) declarator: (identifier)) (declaration type: (primitive_type) declarator: (init_declarator declarator: (identifier) value: (binary_expression left: (identifier) right: (identifier)))))))
+```output[10](10/18/22 00:52:43)
+(translation_unit (declaration type: (primitive_type) declarator: (identifier)) (function_definition type: (primitive_type) declarator: (function_declarator declarator: (identifier) parameters: (parameter_list)) body: (compound_statement (declaration type: (primitive_type) declarator: (identifier)) (declaration type: (primitive_type) declarator: (identifier)) (declaration type: (primitive_type) declarator: (identifier)) (declaration type: (primitive_type) declarator: (init_declarator declarator: (identifier) value: (binary_expression left: (identifier) right: (identifier)))))))
 ```
 
 Create a search pattern to detect the main function and its body.
@@ -145,7 +146,7 @@ local search_pattern2 = [[
 local query = vim.treesitter.parse_query("c", search_pattern2)
 local name, body_node
 for pattern, match in query:iter_matches(root, str) do
-	for id, node in pairs(match) do
+    for id, node in pairs(match) do
 		local row1, col1, row2, col2 = node:range() -- range of the capture
 		local name = query.captures[id]
 		if name == "id" then
@@ -170,7 +171,7 @@ for child, _ in body_node:iter_children() do
 	end
 end
 ```
-```output[88](10/16/22 11:33:31)
+```output[6](10/18/22 00:52:29)
 (primitive_type)
 int a; .......... (declaration type: (primitive_type) declarator: (identifier))
 (primitive_type)

@@ -22,7 +22,7 @@ int main()
 str = table.concat(vim.split(str, "\n"))
 print(str)
 ```
-```output[1](10/20/22 14:29:54)
+```output[2](10/20/22 20:39:24)
 int unused;int main(){	int a;	int b;	int d;	int c = a + b;}
 ```
 
@@ -35,7 +35,7 @@ The neovim version used for this document is:
 ```lua
 print(vim.inspect(vim.version()))
 ```
-```output[2](10/20/22 14:29:54)
+```output[3](10/20/22 20:39:24)
 {
   api_compatible = 0,
   api_level = 10,
@@ -54,7 +54,7 @@ The string parser is created.
 parser = vim.treesitter.get_string_parser(str, "c")
 print(vim.inspect(parser))
 ```
-```output[3](10/20/22 14:29:54)
+```output[4](10/20/22 20:39:24)
 {
   _callbacks = {
     bytes = {},
@@ -127,7 +127,7 @@ tree = tree[1]
 root = tree:root()
 print(root:sexpr())
 ```
-```output[4](10/20/22 14:29:54)
+```output[5](10/20/22 20:39:24)
 (translation_unit (declaration type: (primitive_type) declarator: (identifier)) (function_definition type: (primitive_type) declarator: (function_declarator declarator: (identifier) parameters: (parameter_list)) body: (compound_statement (declaration type: (primitive_type) declarator: (identifier)) (declaration type: (primitive_type) declarator: (identifier)) (declaration type: (primitive_type) declarator: (identifier)) (declaration type: (primitive_type) declarator: (init_declarator declarator: (identifier) value: (binary_expression left: (identifier) right: (identifier)))))))
 ```
 
@@ -170,7 +170,7 @@ for child, _ in body_node:iter_children() do
 	end
 end
 ```
-```output[8](10/20/22 14:30:40)
+```output[6](10/20/22 20:39:24)
 (primitive_type)
 int a; .......... (declaration type: (primitive_type) declarator: (identifier))
 (primitive_type)
@@ -192,7 +192,31 @@ print(value_node:sexpr())
 local op_node = value_node:field("operator")[1]
 print(op_node)
 ```
-```output[17](10/20/22 14:33:07)
+```output[7](10/20/22 20:39:24)
 (binary_expression left: (identifier) right: (identifier))
 <node +>
 ```
+
+iter_captures
+
+```lua
+local search_pattern3 = [[
+(declaration type: (primitive_type) @type declarator: (identifier) @id)
+]]
+
+local query = vim.treesitter.parse_query("c", search_pattern3)
+for id, node, metadata in query:iter_captures(root, str) do
+    print(id, query.captures[id], vim.inspect(node),vim.inspect(metadata) )
+end
+```
+```output[28](10/20/22 20:56:30)
+1 type <userdata 1> {}
+2 id <userdata 1> {}
+1 type <userdata 1> {}
+2 id <userdata 1> {}
+1 type <userdata 1> {}
+2 id <userdata 1> {}
+1 type <userdata 1> {}
+2 id <userdata 1> {}
+```
+

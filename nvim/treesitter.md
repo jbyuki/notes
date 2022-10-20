@@ -22,7 +22,7 @@ int main()
 str = table.concat(vim.split(str, "\n"))
 print(str)
 ```
-```output[7](10/18/22 00:52:43)
+```output[1](10/20/22 14:29:54)
 int unused;int main(){	int a;	int b;	int d;	int c = a + b;}
 ```
 
@@ -35,7 +35,7 @@ The neovim version used for this document is:
 ```lua
 print(vim.inspect(vim.version()))
 ```
-```output[8](10/18/22 00:52:43)
+```output[2](10/20/22 14:29:54)
 {
   api_compatible = 0,
   api_level = 10,
@@ -54,7 +54,7 @@ The string parser is created.
 parser = vim.treesitter.get_string_parser(str, "c")
 print(vim.inspect(parser))
 ```
-```output[9](10/18/22 00:52:43)
+```output[3](10/20/22 14:29:54)
 {
   _callbacks = {
     bytes = {},
@@ -127,7 +127,7 @@ tree = tree[1]
 root = tree:root()
 print(root:sexpr())
 ```
-```output[10](10/18/22 00:52:43)
+```output[4](10/20/22 14:29:54)
 (translation_unit (declaration type: (primitive_type) declarator: (identifier)) (function_definition type: (primitive_type) declarator: (function_declarator declarator: (identifier) parameters: (parameter_list)) body: (compound_statement (declaration type: (primitive_type) declarator: (identifier)) (declaration type: (primitive_type) declarator: (identifier)) (declaration type: (primitive_type) declarator: (identifier)) (declaration type: (primitive_type) declarator: (init_declarator declarator: (identifier) value: (binary_expression left: (identifier) right: (identifier)))))))
 ```
 
@@ -144,7 +144,6 @@ local search_pattern2 = [[
 ]]
 
 local query = vim.treesitter.parse_query("c", search_pattern2)
-local name, body_node
 for pattern, match in query:iter_matches(root, str) do
     for id, node in pairs(match) do
 		local row1, col1, row2, col2 = node:range() -- range of the capture
@@ -171,11 +170,29 @@ for child, _ in body_node:iter_children() do
 	end
 end
 ```
-```output[6](10/18/22 00:52:29)
+```output[8](10/20/22 14:30:40)
 (primitive_type)
 int a; .......... (declaration type: (primitive_type) declarator: (identifier))
 (primitive_type)
 int b; .......... (declaration type: (primitive_type) declarator: (identifier))
 (primitive_type)
+int d; .......... (declaration type: (primitive_type) declarator: (identifier))
+(primitive_type)
 int c = a + b; .......... (declaration type: (primitive_type) declarator: (init_declarator declarator: (identifier) value: (binary_expression left: (identifier) right: (identifier))))
+```
+
+Some nodes are hidden or anonymous. For example the operator node
+in binary expression.
+
+```lua
+local decl_node = body_node:child(4)
+local init_decl = decl_node:field("declarator")[1]
+local value_node = init_decl:field("value")[1]
+print(value_node:sexpr())
+local op_node = value_node:field("operator")[1]
+print(op_node)
+```
+```output[17](10/20/22 14:33:07)
+(binary_expression left: (identifier) right: (identifier))
+<node +>
 ```

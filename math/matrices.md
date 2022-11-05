@@ -48,7 +48,7 @@ b2g_j = swan.mat {
 }
 
 ```
-```output[24](10/12/22 14:06:18)
+```output[1](10/24/22 13:22:22)
 ```
 
 ```lua
@@ -78,5 +78,101 @@ print((S*A):simplify():normalize())
   e1ysy, e2ysy, e3ysy, syty
   e1zsz, e2zsz, e3zsz, sztz
   0, 0, 0, 1
+]
+```
+
+
+```lua
+swan.clear_syms()
+dx = swan.sym "dx"
+dy = swan.sym "dy"
+dz = swan.sym "dz"
+
+vx = swan.sym "vx"
+vy = swan.sym "vy"
+vz = swan.sym "vz"
+
+wx = swan.sym "wx"
+wy = swan.sym "wy"
+wz = swan.sym "wz"
+
+d = swan.mat {
+    { dx },
+    { dy },
+    { dz },
+}
+
+v = swan.mat {
+    { vx },
+    { vy },
+    { vz },
+}
+
+local result = d:dot(v) * d:dot(v)
+local result = d:dot(v) * d:dot(v)
+print(result:expand():simplify())
+```
+```output[4](10/24/22 13:22:52)
+dz^2vz^2 + 2dydzvyvz + 2dxdzvxvz + dy^2vy^2 + 2dxdyvxvy + dx^2vx^2
+```
+
+Quadratic form
+
+```lua
+swan.clear_syms()
+
+q11 = swan.sym "q11"
+q12 = swan.sym "q12"
+q13 = swan.sym "q13"
+q21 = swan.sym "q21"
+q22 = swan.sym "q22"
+q23 = swan.sym "q23"
+q31 = swan.sym "q31"
+q32 = swan.sym "q32"
+q33 = swan.sym "q33"
+
+Q = swan.mat {
+    { q11, q12, q13 },
+    { q21, q22, q23 },
+    { q31, q32, q33 },
+}
+
+dx = swan.sym "dx"
+dy = swan.sym "dy"
+dz = swan.sym "dz"
+
+d = swan.mat {
+    { dx },
+    { dy },
+    { dz },
+}
+
+R = d:T() * Q * d
+print(R:simplify())
+
+```
+```output[11](10/24/22 13:27:54)
+[
+  [
+  dx, dy, dz
+][
+  q11, q12, q13
+  q21, q22, q23
+  q31, q32, q33
+]dx
+  [
+  dx, dy, dz
+][
+  q11, q12, q13
+  q21, q22, q23
+  q31, q32, q33
+]dy
+  [
+  dx, dy, dz
+][
+  q11, q12, q13
+  q21, q22, q23
+  q31, q32, q33
+]dz
 ]
 ```

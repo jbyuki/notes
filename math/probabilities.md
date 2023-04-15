@@ -4,16 +4,16 @@ Pnrobabilities
 $\sigma\text{-field}$
 --------
 
-1. $\Omega\ \in\ F$
-2. $A\ \in\ F\ \rightarrow\ A^C\ \in\ F$
-3. $A_1, A_2, ...\ \in\ F\ \rightarrow\ U_{i=1}^\infty A_i \in F$
+1. $\Omega\in F$
+2. $A\in F\rightarrow A^C\in F$
+3. $A_1, A_2, ...\inF\rightarrowU_{i=1}^\infty A_i \in F$
 
 Probability measure
 -------------------
 
-1. $P(\Omega)\ =\ 1$
-2. $P(A)\ \ge\ 0$
-3. $P(U_{i=1}^\infty A_i)\ =\ \sum_{i=1}^{\infty} P(A_i) \text{ if } \forall i \neq j \text{ we have } A_i \cap A_j = \emptyset$
+1. $P(\Omega)=1$
+2. $P(A)\ge0$
+3. $P(U_{i=1}^\infty A_i)=\sum_{i=1}^{\infty} P(A_i) \text{ if } \forall i \neq j \text{ we have } A_i \cap A_j = \emptyset$
 
 
 Borel set
@@ -29,9 +29,9 @@ $P([x,y)\text{)} = y - x\text{, for } 0\le x \le y \le 1$
 Random variable
 ---------------
 
-$X: F\ \rightarrow\ \mathbb{R}$
+$X: F\rightarrow\mathbb{R}$
 
-is $F-measureable$ if $\{X \le x\}\in F$
+is $F-measureable \text{ if } \{X \le x\}\in F$
 
 
 $\sigma-field$ of random variable
@@ -43,7 +43,7 @@ respect to $\sigma(X)$.
 Independance of $\sigma-fields$
 ----------------------
 
-$\sigma-fields$ are independant if whenever $A_i\ \in\ F_i \text{ for } i=1,...,n \text{ we have } P(\cap_{i=1}^\infty A_i)\ =\ \prod_{i=1}^{\infty} P(A_i)$
+$\sigma-fields$ are independant if whenever $A_i\in F_i \text{ for } i=1,...,n \text{ we have } P(\cap_{i=1}^\infty A_i)=\prod_{i=1}^{\infty} P(A_i)$
 
 Independance of random variables
 --------------------------------
@@ -55,7 +55,7 @@ Continous random variable
 
 If there exists a function $f$, called the density function  (pdf) such that:
 
-$P(X\le x)= \int_{-\infty}^x f(t)\ dt\ \text{ for all } x$
+$P(X\le x)= \int_{-\infty}^x f(t)dt\text{ for all } x$
 
 Discrete random variable
 ------------------------
@@ -78,7 +78,7 @@ $E[x] = \sum_i x_i P(x=x_i)$
 Expected value (continuous)
 ---------------------------
 
-$E[x] =\int x f(x)\ dx$
+$E[x] =\int x f(x)dx$
 
 Expected value (simple)
 -----------------------
@@ -92,23 +92,30 @@ Markov's inequality
 
 If $X\ge 0 \text{ and } a > 0$
 
-$P(X \ge a)\ \le\ E[x]/a$
+$P(X \ge a)\le E[x]/a$
 
 See (A.1) for details.
 
 Chebyshev's inequality
 ----------------------
 
-$P(|X| \ge a)\ =\ P(X^2 \ge a^2)\ \le\ E[X^2]/a^2$
+$P(|X| \ge a)=P(X^2 \ge a^2)\le E[X^2]/a^2$
 
 Linearity of expected value
 ---------------------------
 
-If $E|X|, E|Y|\ <\ \infty$ then
+If $E|X|, E|Y|<\infty$ then
 
-1) $E[aX+b]\ =\ aE[X] + b$
+1) $E[aX+b]=aE[X] + b   $
 
-2) $E[X+Y]\ =\ E[X]+E[Y]$
+2) $E[X+Y]=E[X]+E[Y]     $ dasf
+
+Lesbuegue's integral
+--------------------
+
+$g$ is non-negative
+
+$g_n(x) = \sum_{i \ge 1} \frac{i-1}{2^n} \cdot 1_\left({\frac{i-1}{2^n} < g(x) \le \frac{i}{2^n}}\right)$
 
 
 
@@ -127,7 +134,8 @@ $E[I_{X\ge a}] \le E[X]/a$
 
 and 
 
-$P(X \ge a)\ \le\ E[X]/a\quad \square$
+$P(X \ge a)\le E[X]/a\quad \square$
+
 
 
  vim:ts=8:noet:ft=help:norl:

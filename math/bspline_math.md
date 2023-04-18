@@ -51,9 +51,14 @@ end
 ```
 
 $$\begin{align*}N_{i,0}(u^{\ast}) &= \end{align*}$$
+
 $$\begin{align*}N_{i,1}(u^{\ast}) &= \frac{u^{\ast}-u_{i}}{u_{i+1} - u_{i}}\end{align*}$$
+
 $$\begin{align*}N_{i-1,1}(u^{\ast}) &= \frac{u_{i+1}-u^{\ast}}{u_{i+1} - u_{i}}\end{align*}$$
+
+
 $$\begin{align*}N_{i,2}(u^{\ast}) &= \frac{u^{\ast}-u_{i}}{u_{i+2} - u_{i}}\frac{u^{\ast}-u_{i}}{u_{i+1} - u_{i}}\end{align*}$$
+
 $$\begin{align*}N_{i-1,2}(u^{\ast}) &= \frac{u^*-u_{i-1}}{u_{i+1} - u_{i-1}}\frac{u_{i+1}-u^{\ast}}{u_{i+1} - u_{i}} \\&+ \frac{u_{i+2}-u^{\ast}}{u_{i+2} - u_{i}}\frac{u^{\ast}-u_{i}}{u_{i+1} - u_{i}}\end{align*}$$
 $$\begin{align*}N_{i-2,2}(u^{\ast}) &= \frac{u_{i+1}-u^{\ast}}{u_{i+1} - u_{i-1}}\frac{u_{i+1}-u^{\ast}}{u_{i+1} - u_{i}}\end{align*}$$
 $$\begin{align*}N_{i,3}(u^{\ast}) &= \frac{u^{\ast}-u_{i}}{u_{i+3} - u_{i}}\frac{u^{\ast}-u_{i}}{u_{i+2} - u_{i}}\frac{u^{\ast}-u_{i}}{u_{i+1} - u_{i}}\end{align*}$$

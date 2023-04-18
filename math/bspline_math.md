@@ -54,7 +54,7 @@ print("---")
 ```
 
 ---
-$$\begin{align*}N_{i,0}(u^{\ast}) &= \end{align*}$$
+$$\begin{align*}N_{i,0}(u^{\ast}) &= 1\end{align*}$$
 
 ---
 $$\begin{align*}N_{i,1}(u^{\ast}) &= \frac{u^{\ast}-u_{i}}{u_{i+1} - u_{i}}\end{align*}$$

@@ -1,5 +1,5 @@
 Monte carlo integration
------------------------
+=======================
 
 The problem is of the form:
 
@@ -30,7 +30,5 @@ $\frac{Y_1 + Y_2 + \dots + Y_N}{N} \rightarrow E\left[\frac{f(X)}{\mu(X)}\right]
 as $N$ gets larger where $Y_i \sim \frac{f(X)}{\mu(X)}$
 
 And more interestingly, $\mu$ is free to choose! This is the idea of importance sampling.
-
-
 
 

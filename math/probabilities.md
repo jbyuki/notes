@@ -6,7 +6,7 @@ $\sigma\text{-field}$
 
 1. $\Omega\in F$
 2. $A\in F\rightarrow A^C\in F$
-3. $A_1, A_2, ...\inF\rightarrowU_{i=1}^\infty A_i \in F$
+3. $A_1, A_2, ...\in F\rightarrow U_{i=1}^\infty A_i \in F$
 
 Probability measure
 -------------------

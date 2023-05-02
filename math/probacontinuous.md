@@ -98,5 +98,136 @@ plt.scatter(x,y)
 ```
 
 
+```lua
+function Normal(mu, sigma)
+	local particules = {}
+	for i=1,1000000 do
+		table.insert(particules, sigma*InvNormCDF(math.random()) + mu) -- so nice
+	end
+	return particules
+end
+```
+```output[21](5/3/2023 12:46:23 AM)
+```
+
+```lua
+function plot(p, min_x, max_x, N)
+	local grid = {}
+	local dx = (max_x-min_x)/N
+	for _, pi in ipairs(p) do
+		local n = math.ceil((pi - min_x)/dx)
+		grid[n] = (grid[n] or 0) + 1
+	end
+
+	local x = {}
+	local y = {}
+	local lp = #p
+	for i=1,N do
+		table.insert(x, (i-0.5)*dx + min_x)
+		table.insert(y, (grid[i] or 0)/(dx*lp))
+	end
+	plt.scatter(x,y)
+end
+```
+```output[35](5/3/2023 12:52:13 AM)
+```
+
+```lua
+plot(Normal(0,1), -3, 3, 50)
+```
+```output[24](5/3/2023 12:46:40 AM)
+```
+
+```lua
+function square(p)
+	return vim.tbl_map(function(x) return x*x end, p)
+end
+```
+```output[33](5/3/2023 12:52:06 AM)
+```
+
+```lua
+local x1 = Normal(0,1)
+plot(square(x1), 0, 0.1, 50)
+```
+```output[38](5/3/2023 12:52:47 AM)
+```
+
+```lua
+function add(p1, p2)
+	local newp = {}
+	for i=1,math.sqrt(#p1) do
+		for j=1,math.sqrt(#p2) do
+			table.insert(newp, p1[i] + p2[j])
+		end
+	end
+	return newp
+end
+```
+```output[39](5/3/2023 12:54:21 AM)
+```
+
+```lua
+local x1 = Normal(0,1)
+local x2 = Normal(0,1)
+local y = add(x1,x2)
+plot(y, -5, 5, 30)
+```
+```output[42](5/3/2023 12:55:21 AM)
+```
+
+```lua
+function E(p)
+	local sum = 0
+	for _, pi in ipairs(p) do
+		sum = sum + pi
+	end
+	return sum / #p
+end
+```
+```output[46](5/3/2023 12:58:01 AM)
+```
+
+```lua
+print(E(Normal(2,4)))
+```
+```output[50](5/3/2023 12:58:27 AM)
+1.997524962141
+```
+
+```lua
+function Var(p)
+	local p2 = square(p)
+	return E(p2) - E(p)^2
+end
+```
+```output[51](5/3/2023 12:59:39 AM)
+```
+
+```lua
+print(Var(Normal(0,1)))
+```
+```output[53](5/3/2023 1:00:09 AM)
+0.99743614401543
+```
+
+```lua
+function ChiSquared(k)
+	local sum = square(Normal(0,1))
+	for i=2,k do
+		sum = add(sum, square(Normal(0,1)))
+	end
+	return sum
+end
+```
+```output[55](5/3/2023 1:01:30 AM)
+```
+
+
+```lua
+plot(ChiSquared(4), 0, 4, 10)
+```
+```output[66](5/3/2023 1:04:50 AM)
+```
 
 

@@ -19,25 +19,34 @@ Yw = {
 	[6] = 1/6,
 }
 ```
-```output[1](4/25/2023 11:18:11 PM)
+```output[1](5/2/2023 11:29:53 PM)
 ```
 
 ```lua
 function E(X)
-	sum = 0
-	for v,p in pairs(X) do
-		sum = sum + v*p
+	if type(X) == "table" then
+		sum = 0
+		for v,p in pairs(X) do
+			sum = sum + v*p
+		end
+		return sum
+	elseif type(X) == "function" then
+		sum = 0
+		dx = 0.01
+		for i=-1000,1000,dx do
+			sum = sum + i*X(i)*dx
+		end
+		return sum
 	end
-	return sum
 end
 ```
-```output[2](4/25/2023 11:18:11 PM)
+```output[2](5/2/2023 11:29:53 PM)
 ```
 
 ```lua
 print(E(Xw))
 ```
-```output[3](4/25/2023 11:18:11 PM)
+```output[3](5/2/2023 11:29:53 PM)
 3.5
 ```
 
@@ -53,20 +62,20 @@ function mul(Aw, Bw)
 	return Cw
 end
 ```
-```output[4](4/25/2023 11:18:11 PM)
+```output[4](5/2/2023 11:29:53 PM)
 ```
 
 
 ```lua
 XYw = mul(Xw,Yw)
 ```
-```output[5](4/25/2023 11:18:11 PM)
+```output[5](5/2/2023 11:29:53 PM)
 ```
 
 ```lua
 print(E(XYw), E(Xw)*E(Yw))
 ```
-```output[6](4/25/2023 11:18:11 PM)
+```output[6](5/2/2023 11:29:53 PM)
 12.25 12.25
 ```
 
@@ -85,7 +94,7 @@ function add(Aw, Bw)
 	return Cw
 end
 ```
-```output[7](4/25/2023 11:18:11 PM)
+```output[7](5/2/2023 11:29:53 PM)
 ```
 
 
@@ -97,19 +106,23 @@ function Bernoulli(p)
 	}
 end
 ```
-```output[8](4/25/2023 11:18:11 PM)
+```output[8](5/2/2023 11:29:53 PM)
 ```
 
 ```lua
 function Square(Aw)
-	SqAw = {}
-	for v,p in pairs(Aw) do
-		SqAw[v*v] = p
+	if type(Aw) == "table" then
+		SqAw = {}
+		for v,p in pairs(Aw) do
+			SqAw[v*v] = p
+		end
+		return SqAw
+	elseif type(Aw) == "function" then
+		return function(x) if x < 0 then return 0 else return 2*Aw(math.sqrt(x)) end end
 	end
-	return SqAw
 end
 ```
-```output[9](4/25/2023 11:18:11 PM)
+```output[9](5/2/2023 11:29:53 PM)
 ```
 
 
@@ -119,7 +132,7 @@ function Var(Aw)
 	return E(SqAw) - E(Aw)^2
 end
 ```
-```output[10](4/25/2023 11:18:11 PM)
+```output[10](5/2/2023 11:29:53 PM)
 ```
 
 ```lua
@@ -128,7 +141,7 @@ X1 = Bernoulli(p)
 print(E(X1), p)
 print(Var(X1), p*(1-p))
 ```
-```output[11](4/25/2023 11:18:11 PM)
+```output[11](5/2/2023 11:29:53 PM)
 0.3 0.3
 0.21 0.21
 ```
@@ -144,26 +157,44 @@ end
 print(E(Sn))
 print(Var(Sn), lam - lam^2/n)
 ```
-```output[37](4/25/2023 11:25:42 PM)
+```output[12](5/2/2023 11:29:53 PM)
 29.999999999999
 29.100000000024 29.1
 ```
 
+```lua
+function Normal(mu, sigma)
+	local pdf = function(x)
+		return math.exp(-0.5*((x - mu)/sigma)^2)/(sigma*math.sqrt(2*math.pi))
+	end
+	return pdf
+end
+```
+```output[13](5/2/2023 11:29:53 PM)
+```
+
 
 ```lua
-plt = require"plotly"
-x = {}
-y = {}
-for v,p in pairs(Sn) do
-	if v < 100 then
-		table.insert(x, v)
-		table.insert(y, p)
-	end
+local plt = require"plotly"
+local X1 = Square(Normal(0, 1))
+local x = {}
+local y = {}
+for i=-9,9,0.01 do
+	table.insert(x, i)
+	table.insert(y, X1(i))
 end
-plt.scatter(x,y)
+plt.scatter(x, y)
+print(X1(0))
 ```
-```output[38](4/25/2023 11:25:43 PM)
+```output[20](5/2/2023 11:33:13 PM)
+0.79788456080287
 ```
 
 
+```lua
+print(Normal(0, 1))
+```
+```output[15](5/2/2023 11:29:53 PM)
+function: 0x01b02a8805b8
+```
 

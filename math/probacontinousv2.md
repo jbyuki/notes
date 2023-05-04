@@ -1,4 +1,4 @@
-See [probacontinousv1](probacontinous.md).
+See [probacontinousv1](probacontinuous.md).
 
 ```lua
 function InvNormCDF(p)

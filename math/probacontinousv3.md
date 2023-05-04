@@ -104,49 +104,74 @@ function RV.resolve(p, saved)
 	end
 end
 
+function RV:copy()
+	local o = {}
+	for k, v in pairs(self) do
+		o[k] = v
+	end
+	return setmetatable(o, getmetatable(self))
+end
+
+function RV.copy_one_of(...)
+	for _, p in ipairs({...}) do
+		if type(p) == "table" then
+			return p:copy()
+		end
+	end
+end
+
 function RV.__add(p1, p2)
-	return function(saved)
-		saved = saved or {}
+	local result = RV.copy_one_of(p1, p2)
+	function result:sample(saved)
 		return RV.resolve(p1, saved) + RV.resolve(p2, saved)
 	end
+	return result
 end
 
 function RV.__sub(p1, p2)
-	return function(saved)
-		saved = saved or {}
+	local result = RV.copy_one_of(p1, p2)
+	function result:sample(saved)
 		return RV.resolve(p1, saved) - RV.resolve(p2, saved)
 	end
+	return result
 end
 
 function RV.__mul(p1, p2)
-	return function(saved)
-		saved = saved or {}
+	local result = RV.copy_one_of(p1, p2)
+	function result:sample(saved)
 		return RV.resolve(p1, saved) * RV.resolve(p2, saved)
 	end
+	return result
 end
 
 function RV.__div(p1, p2)
-	return function(saved)
-		saved = saved or {}
+	local result = RV.copy_one_of(p1, p2)
+	function result:sample(saved)
 		return RV.resolve(p1, saved) / RV.resolve(p2, saved)
 	end
+	return result
 end
 
-function RV:__pow(k)
-	return function(saved)
-		saved = saved or {}
-		return RV.resolve(self, saved) ^ k
+function RV.__pow(p1, k)
+	local result = p1:copy()
+	function result:sample(saved)
+		return p1(saved) ^ k
 	end
+	return result
 end
 
-function RV:__unm()
+function RV.__unm(p1)
 	return function(saved)
 		saved = saved or {}
-		return -RV.resolve(self, saved)
+		return -p1(saved)
 	end
 end
 
 function RV:__call(saved)
+	return self:sample(saved)
+end
+
+function RV:rand(saved)
 	local eps
 	if saved then
 		if not saved[self.id] then
@@ -156,23 +181,25 @@ function RV:__call(saved)
 	else
 		eps = math.random()
 	end
-	return self:sample(eps)
+	return eps
 end
 ```
-```output[99](5/4/2023 10:21:58 PM)
+```output[142](5/4/2023 10:44:00 PM)
 ```
 
+## Normal distribution
 
 ```lua
 Normal = RV:new_abstract()
 function Normal:new(mu, sigma)
-	return Normal:new_abstract { mu = mu, sigma = sigma }
+	return Normal:new_abstract { mu = mu or 0, sigma = sigma or 1 }
 end
-function Normal:sample(eps)
+function Normal:sample(saved)
+	local eps = self:rand(saved)
 	return self.sigma * InvNormCDF(eps) + self.mu
 end
 ```
-```output[100](5/4/2023 10:21:58 PM)
+```output[143](5/4/2023 10:44:02 PM)
 ```
 
 ```lua
@@ -181,8 +208,8 @@ x2 = Normal:new(0, 1)
 y = x1 + x2
 print(y())
 ```
-```output[101](5/4/2023 10:21:58 PM)
-1.5496994663368
+```output[146](5/4/2023 10:44:10 PM)
+-1.124832256065
 ```
 
 ```lua
@@ -209,14 +236,14 @@ function plot(p, min_x, max_x, N)
 	plt.scatter(x,y)
 end
 ```
-```output[102](5/4/2023 10:21:58 PM)
+```output[147](5/4/2023 10:44:13 PM)
 ```
 
 ```lua
 x1 = Normal:new(0, 1)
 plot(x1, -3, 3)
 ```
-```output[103](5/4/2023 10:21:59 PM)
+```output[148](5/4/2023 10:44:18 PM)
 ```
 
 ```lua
@@ -253,8 +280,110 @@ local x1 = Normal:new(2.5,3)
 print(E(x1))
 print(Var(x1))
 ```
-```output[118](5/4/2023 10:23:57 PM)
-2.4994513139749
-9.002169607584
+```output[121](5/4/2023 10:27:15 PM)
+2.4956274857065
+8.9950300477953
+```
+
+## Chi-Squared distribution
+
+```lua
+ChiSquared = RV:new_abstract()
+function ChiSquared:new(k)
+	assert(k)
+	local x = Normal:new(0,1)^2
+	for i=2,k do
+		local xi = Normal:new(0,1)^2
+		x = x + xi
+	end
+	return ChiSquared:new_abstract { rv = x }
+end
+function ChiSquared:sample(saved)
+	return self.rv(saved)
+end
+```
+```output[150](5/4/2023 10:44:41 PM)
+```
+
+```lua
+local x1 = Normal:new(0,1)^2
+local x2 = Normal:new(0,1)^2
+local y = x1 + x2
+print(x1())
+```
+```output[149](5/4/2023 10:44:37 PM)
+0.057127974211664
+```
+
+```lua
+local x = ChiSquared:new(4)
+plot(x, 0, 10, 20)
+```
+```output[159](5/4/2023 10:47:03 PM)
+```
+
+## Discrete distributions #1
+
+```lua
+Coin = RV:new_abstract()
+function Coin:new(k)
+	return Coin:new_abstract { }
+end
+function Coin:sample(saved)
+	local eps = self:rand(saved)
+	if eps < 0.5 then
+		return -1
+	else
+		return 1
+	end
+end
+```
+```output[163](5/4/2023 10:50:25 PM)
+```
+
+```lua
+function plotdiscrete(p)
+	local plt = require"plotly"
+	local grid = {}
+	local M = 1000000
+	for i=1,M do
+		local pi = p()
+		grid[pi] = (grid[pi] or 0) + 1
+	end
+
+	local x = {}
+	local y = {}
+	for xi, yi in pairs(grid) do
+		table.insert(x, xi)
+		table.insert(y, yi/M)
+	end
+	plt.scatter(x,y)
+end
+```
+```output[165](5/4/2023 10:50:42 PM)
+```
+
+```lua
+plotdiscrete(Coin:new())
+```
+```output[166](5/4/2023 10:50:44 PM)
+```
+
+```lua
+Bernoulli = RV:new_abstract()
+function Bernoulli:new(p)
+	assert(p)
+	return Bernoulli:new_abstract { p = p }
+end
+function Bernoulli:sample(saved)
+	local eps = self:rand(saved)
+	if eps < p then
+		return 1 
+	else
+		return 0
+	end
+end
+```
+```output[167](5/4/2023 10:51:29 PM)
 ```
 

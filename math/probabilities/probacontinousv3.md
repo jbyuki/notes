@@ -161,10 +161,11 @@ function RV.__pow(p1, k)
 end
 
 function RV.__unm(p1)
-	return function(saved)
-		saved = saved or {}
+	local result = p1:copy()
+	function result:sample(saved)
 		return -p1(saved)
 	end
+	return result
 end
 
 function RV:__call(saved)
@@ -184,7 +185,7 @@ function RV:rand(saved)
 	return eps
 end
 ```
-```output[142](5/4/2023 10:44:00 PM)
+```output[168](5/4/2023 10:52:59 PM)
 ```
 
 ## Normal distribution
@@ -387,3 +388,8 @@ end
 ```output[167](5/4/2023 10:51:29 PM)
 ```
 
+```lua
+x1 = Normal:new(0,1)
+```
+```output[172](5/4/2023 10:53:35 PM)
+```

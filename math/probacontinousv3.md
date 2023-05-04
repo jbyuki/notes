@@ -65,7 +65,7 @@ function InvNormCDF(p)
 	return x
 end
 ```
-```output[36](5/4/2023 10:03:08 PM)
+```output[98](5/4/2023 10:21:58 PM)
 ```
 
 
@@ -94,17 +94,55 @@ function RV:new_abstract(o)
 	return setmetatable(o, mt)
 end
 
-function RV:__add(p)
-	return function(saved)
-		saved = saved or {}
-		return self(saved) + p(saved)
+function RV.resolve(p, saved)
+	if type(p) == "number" then
+		return p
+	elseif type(p) == "table" then
+		return p(saved)
+	else
+		assert(false, ("Unsupported %s!"):format(type(p)))
 	end
 end
 
-function RV:__sub(p)
+function RV.__add(p1, p2)
 	return function(saved)
 		saved = saved or {}
-		return self(saved) - p(saved)
+		return RV.resolve(p1, saved) + RV.resolve(p2, saved)
+	end
+end
+
+function RV.__sub(p1, p2)
+	return function(saved)
+		saved = saved or {}
+		return RV.resolve(p1, saved) - RV.resolve(p2, saved)
+	end
+end
+
+function RV.__mul(p1, p2)
+	return function(saved)
+		saved = saved or {}
+		return RV.resolve(p1, saved) * RV.resolve(p2, saved)
+	end
+end
+
+function RV.__div(p1, p2)
+	return function(saved)
+		saved = saved or {}
+		return RV.resolve(p1, saved) / RV.resolve(p2, saved)
+	end
+end
+
+function RV:__pow(k)
+	return function(saved)
+		saved = saved or {}
+		return RV.resolve(self, saved) ^ k
+	end
+end
+
+function RV:__unm()
+	return function(saved)
+		saved = saved or {}
+		return -RV.resolve(self, saved)
 	end
 end
 
@@ -121,7 +159,7 @@ function RV:__call(saved)
 	return self:sample(eps)
 end
 ```
-```output[50](5/4/2023 10:05:13 PM)
+```output[99](5/4/2023 10:21:58 PM)
 ```
 
 
@@ -134,7 +172,7 @@ function Normal:sample(eps)
 	return self.sigma * InvNormCDF(eps) + self.mu
 end
 ```
-```output[51](5/4/2023 10:05:15 PM)
+```output[100](5/4/2023 10:21:58 PM)
 ```
 
 ```lua
@@ -143,6 +181,80 @@ x2 = Normal:new(0, 1)
 y = x1 + x2
 print(y())
 ```
-```output[56](5/4/2023 10:05:23 PM)
--0.83785930349544
+```output[101](5/4/2023 10:21:58 PM)
+1.5496994663368
 ```
+
+```lua
+function plot(p, min_x, max_x, N)
+	min_x = min_x or -5
+	max_x = max_x or 5
+	N = N or 31
+	local plt = require"plotly"
+	local grid = {}
+	local dx = (max_x-min_x)/N
+	local M = 1000000
+	for i=1,M do
+		local pi = p()
+		local n = math.ceil((pi - min_x)/dx)
+		grid[n] = (grid[n] or 0) + 1
+	end
+
+	local x = {}
+	local y = {}
+	for i=1,N do
+		table.insert(x, (i-0.5)*dx + min_x)
+		table.insert(y, (grid[i] or 0)/(dx*M))
+	end
+	plt.scatter(x,y)
+end
+```
+```output[102](5/4/2023 10:21:58 PM)
+```
+
+```lua
+x1 = Normal:new(0, 1)
+plot(x1, -3, 3)
+```
+```output[103](5/4/2023 10:21:59 PM)
+```
+
+```lua
+print(1/(1*math.sqrt(2*math.pi)))
+```
+```output[104](5/4/2023 10:21:59 PM)
+0.39894228040143
+```
+
+```lua
+function E(p)
+	local sum = 0
+	local M = 1000000
+	for i=1,M do
+		sum = sum + p()
+	end
+	return sum/M
+end
+```
+```output[115](5/4/2023 10:23:39 PM)
+```
+
+```lua
+function Var(p)
+	return E(p^2) - E(p)^2
+end
+```
+```output[114](5/4/2023 10:23:38 PM)
+```
+
+
+```lua
+local x1 = Normal:new(2.5,3)
+print(E(x1))
+print(Var(x1))
+```
+```output[118](5/4/2023 10:23:57 PM)
+2.4994513139749
+9.002169607584
+```
+

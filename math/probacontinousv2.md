@@ -1,5 +1,7 @@
 See [probacontinousv1](probacontinuous.md).
 
+See [probacontinousv3](probacontinousv3.md) for a newer iteration with dependant variables support.
+
 ```lua
 function InvNormCDF(p)
 	local x

@@ -65,7 +65,7 @@ function InvNormCDF(p)
 	return x
 end
 ```
-```output[1](5/7/2023 7:13:51 PM)
+```output[1](5/10/2023 1:01:02 AM)
 ```
 
 
@@ -123,6 +123,7 @@ end
 function RV.__add(p1, p2)
 	local result = RV.copy_one_of(p1, p2)
 	function result:sample(saved)
+		saved = saved or {}
 		return RV.resolve(p1, saved) + RV.resolve(p2, saved)
 	end
 	return result
@@ -131,6 +132,7 @@ end
 function RV.__sub(p1, p2)
 	local result = RV.copy_one_of(p1, p2)
 	function result:sample(saved)
+		saved = saved or {}
 		return RV.resolve(p1, saved) - RV.resolve(p2, saved)
 	end
 	return result
@@ -139,6 +141,7 @@ end
 function RV.__mul(p1, p2)
 	local result = RV.copy_one_of(p1, p2)
 	function result:sample(saved)
+		saved = saved or {}
 		return RV.resolve(p1, saved) * RV.resolve(p2, saved)
 	end
 	return result
@@ -147,6 +150,7 @@ end
 function RV.__div(p1, p2)
 	local result = RV.copy_one_of(p1, p2)
 	function result:sample(saved)
+		saved = saved or {}
 		return RV.resolve(p1, saved) / RV.resolve(p2, saved)
 	end
 	return result
@@ -155,6 +159,7 @@ end
 function RV.__pow(p1, k)
 	local result = p1:copy()
 	function result:sample(saved)
+		saved = saved or {}
 		return p1(saved) ^ k
 	end
 	return result
@@ -163,6 +168,7 @@ end
 function RV.__unm(p1)
 	local result = p1:copy()
 	function result:sample(saved)
+		saved = saved or {}
 		return -p1(saved)
 	end
 	return result
@@ -185,7 +191,7 @@ function RV:rand(saved)
 	return eps
 end
 ```
-```output[2](5/7/2023 7:13:51 PM)
+```output[40](5/10/2023 1:07:03 AM)
 ```
 
 ## Normal distribution
@@ -200,7 +206,7 @@ function Normal:sample(saved)
 	return self.sigma * InvNormCDF(eps) + self.mu
 end
 ```
-```output[3](5/7/2023 7:13:51 PM)
+```output[41](5/10/2023 1:07:05 AM)
 ```
 
 ```lua
@@ -209,7 +215,7 @@ x2 = Normal:new(0, 1)
 y = x1 + x2
 print(y())
 ```
-```output[4](5/7/2023 7:13:51 PM)
+```output[4](5/10/2023 1:01:02 AM)
 -0.71388329865408
 ```
 
@@ -237,21 +243,21 @@ function plot(p, min_x, max_x, N)
 	plt.scatter(x,y)
 end
 ```
-```output[5](5/7/2023 7:13:51 PM)
+```output[5](5/10/2023 1:01:02 AM)
 ```
 
 ```lua
 x1 = Normal:new(0, 1)
 plot(x1, -3, 3)
 ```
-```output[6](5/7/2023 7:13:51 PM)
+```output[6](5/10/2023 1:01:03 AM)
 Server started on port 8087
 ```
 
 ```lua
 print(1/(1*math.sqrt(2*math.pi)))
 ```
-```output[7](5/7/2023 7:13:52 PM)
+```output[7](5/10/2023 1:01:03 AM)
 0.39894228040143
 ```
 
@@ -265,7 +271,7 @@ function E(p)
 	return sum/M
 end
 ```
-```output[8](5/7/2023 7:13:52 PM)
+```output[8](5/10/2023 1:01:03 AM)
 ```
 
 ```lua
@@ -273,7 +279,7 @@ function Var(p)
 	return E(p^2) - E(p)^2
 end
 ```
-```output[9](5/7/2023 7:13:52 PM)
+```output[9](5/10/2023 1:01:03 AM)
 ```
 
 
@@ -282,7 +288,7 @@ local x1 = Normal:new(2.5,3)
 print(E(x1))
 print(Var(x1))
 ```
-```output[10](5/7/2023 7:13:54 PM)
+```output[10](5/10/2023 1:01:05 AM)
 2.5031737120709
 8.9568123556338
 ```
@@ -304,7 +310,7 @@ function ChiSquared:sample(saved)
 	return self.rv(saved)
 end
 ```
-```output[11](5/7/2023 7:13:54 PM)
+```output[11](5/10/2023 1:01:05 AM)
 ```
 
 ```lua
@@ -313,7 +319,7 @@ local x2 = Normal:new(0,1)^2
 local y = x1 + x2
 print(x1())
 ```
-```output[12](5/7/2023 7:13:54 PM)
+```output[12](5/10/2023 1:01:06 AM)
 0.083002706670583
 ```
 
@@ -321,7 +327,7 @@ print(x1())
 local x = ChiSquared:new(4)
 plot(x, 0, 10, 20)
 ```
-```output[13](5/7/2023 7:14:00 PM)
+```output[13](5/10/2023 1:01:09 AM)
 ```
 
 ## Discrete distributions #1
@@ -340,7 +346,7 @@ function Coin:sample(saved)
 	end
 end
 ```
-```output[14](5/7/2023 7:14:00 PM)
+```output[14](5/10/2023 1:01:09 AM)
 ```
 
 ```lua
@@ -362,13 +368,13 @@ function plotdiscrete(p)
 	plt.scatter(x,y)
 end
 ```
-```output[15](5/7/2023 7:14:00 PM)
+```output[15](5/10/2023 1:01:09 AM)
 ```
 
 ```lua
 plotdiscrete(Coin:new())
 ```
-```output[16](5/7/2023 7:14:00 PM)
+```output[16](5/10/2023 1:01:09 AM)
 ```
 
 ```lua
@@ -386,7 +392,7 @@ function Bernoulli:sample(saved)
 	end
 end
 ```
-```output[17](5/7/2023 7:14:00 PM)
+```output[17](5/10/2023 1:01:09 AM)
 ```
 
 ```lua
@@ -437,7 +443,7 @@ function plot2d(p1, p2, min_x, max_x, min_y, max_y, N)
 	plt.plot3d(x,y,z)
 end
 ```
-```output[18](5/7/2023 7:14:00 PM)
+```output[18](5/10/2023 1:01:09 AM)
 ```
 
 
@@ -447,7 +453,7 @@ local y = Normal:new(0,1)
 local z = Coin:new()*3
 plot2d(x+y, y, -4, 4, -4, 4, 30)
 ```
-```output[19](5/7/2023 7:14:04 PM)
+```output[19](5/10/2023 1:01:12 AM)
 ```
 
 ```lua
@@ -498,7 +504,7 @@ function plotheatmap(p1, p2, min_x, max_x, min_y, max_y, N)
 	plt.heatmap(x,y,z)
 end
 ```
-```output[20](5/7/2023 7:14:04 PM)
+```output[20](5/10/2023 1:01:12 AM)
 ```
 
 ```lua
@@ -507,7 +513,7 @@ local y = Normal:new(0,1)
 local z = Coin:new()
 plotheatmap(z*y, y, -4, 4, -4, 4, 50)
 ```
-```output[33](5/7/2023 7:17:39 PM)
+```output[21](5/10/2023 1:01:14 AM)
 ```
 
 ```lua
@@ -521,7 +527,7 @@ function UniformDiscrete:sample(saved)
 	return self.tbl[math.ceil(eps*#self.tbl)]
 end
 ```
-```output[48](5/7/2023 7:22:26 PM)
+```output[22](5/10/2023 1:01:14 AM)
 ```
 
 
@@ -529,14 +535,14 @@ end
 dice = UniformDiscrete:new {1,2,3,4,5,6}
 print(dice())
 ```
-```output[54](5/7/2023 7:22:32 PM)
-6
+```output[23](5/10/2023 1:01:14 AM)
+4
 ```
 
 ```lua
 plotdiscrete(dice)
 ```
-```output[55](5/7/2023 7:22:40 PM)
+```output[24](5/10/2023 1:01:14 AM)
 ```
 
 ```lua
@@ -545,5 +551,27 @@ local y = Normal:new(0,1)
 local z = UniformDiscrete:new {-1, 1}
 plotheatmap(z*y, y, -3, 3, -3, 3, 30)
 ```
-```output[65](5/7/2023 7:25:06 PM)
+```output[25](5/10/2023 1:01:16 AM)
 ```
+
+
+```lua
+function Cov(x,y)
+	mx = E(x)
+	my = E(y)
+
+	return E((x - mx)*(y-my))
+end
+```
+```output[26](5/10/2023 1:01:55 AM)
+```
+
+```lua
+x1 = Normal:new(0,1)
+x2 = Normal:new(0,1)
+print(Cov(x1,x2))
+```
+```output[46](5/10/2023 1:07:35 AM)
+0.0024362834541516
+```
+

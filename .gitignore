@@ -1,0 +1,4 @@
+*.log
+*.bcf
+*.run.xml
+*.aux

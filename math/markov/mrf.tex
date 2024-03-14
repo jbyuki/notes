@@ -160,6 +160,25 @@ Where we can express the likelihood of $\boldsymbol{Z}_N = \{ Z_1, \dots, Z_N \}
 
 The continous version of HMM is actually a Kalman filter !
 
+\section{Markov Random Fields (MRFs)}
 
+MRFs like MCs also define a conditional independence property:
+
+
+\begin{align*}
+	\Pr( X_i \mid \dots,X_{i+1},X_{i-1},\dots,X_1  ) = \Pr( X_i \mid	X_{j\in\mathcal{N}(i)}  ) 
+\end{align*}
+
+where $\mathcal{N}(i)$ is the set of events directly adjancent to $i$.
+
+The joint probability which in MCs is computed on the last state is now defined as:
+
+\begin{align*}
+	\Pr( \boldsymbol{X} ) \propto \prod_{\boldsymbol{c}\in\mathcal{C}} \Pr( \boldsymbol{c} ) 
+\end{align*}
+
+Where $\mathcal{C}$ is the set of maximum cliques. This is the result of Hammersley-Clifford theorem.
+
+Factor graphs makes which cliques are choosed explicit in the graph.
 
 \end{document}

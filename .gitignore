@@ -2,3 +2,4 @@
 *.bcf
 *.run.xml
 *.aux
+.ntangle/

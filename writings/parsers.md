@@ -35,3 +35,9 @@ Grammars
 * **PEG**: Parser expression grammar. Same as CFG but matches eagerly. Also integrates nicely with Regex as it also matches eagerly. Thus the lexical analysis part can be expressed directly which is nice.
 	* Top-down: Recursive descent parser, [Prackat parser](https://bford.info/pub/lang/packrat-icfp02.pdf)
 	* Bottom-up: [Pika parser](https://arxiv.org/abs/2005.06444)
+
+Pratt's Parser
+==============
+
+* Bottom-up ? not sure
+* Is not expressed directly using a grammar but instead associate BP (binding power) to unary and binary operators.

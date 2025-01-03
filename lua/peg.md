@@ -48,8 +48,12 @@ calc = lpeg.P {
 	Number = lpeg.R("09")^1
 }
 ```
-```output[2](1/1/2025 7:02:10 PM)
+```output[3](1/1/2025 7:19:44 PM)
 [string "calc = lpeg.P {..."]:1: rule 'Expr' may be left recursive
 ```
 
 Well, no, because of left recursiveness.
+
+While the grammar would be valid for a bottom-up parser, it would still give
+an incorrect parse due to how PEG is designed (i.e. if a parse fail, it would
+go to the next, and not wait)

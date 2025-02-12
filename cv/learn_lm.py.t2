@@ -18,7 +18,8 @@ def rot(theta):
     [np.sin(np.pi*theta/180), np.cos(np.pi*theta/180)]])
 
 ;; functions
-def proj(x,y,theta,w,fov,px,py):
+def proj(param,w):
+  x,y,theta,px,py,f = param
   n2w = np.eye(3)
   n2w[:2,:2] = rot(theta)
   n2w[:2,2] = [x,y]
@@ -32,7 +33,6 @@ def proj(x,y,theta,w,fov,px,py):
   p_n = p_n[:2]
   p_n /= p_n[1]
 
-  f = (w/2)/np.tan(np.pi*fov/(180*2))
   return f * (p_n[0]/p_n[1]) + w/2
 
 ;; functions
@@ -62,11 +62,13 @@ pts = np.array([[-1, 0],
 
 imgs = []
 fov = 70
+w = 640
+f = (w/2)/np.tan(np.pi*fov/(180*2))
 
 for cam in cams:
   imgs_cam = []
   for pt in pts:
-    imgs_cam.append(proj(cam[0], cam[1], cam[2], 640, fov, pt[0], pt[1]))
+    imgs_cam.append(proj([cam[0], cam[1], cam[2], pt[0], pt[1], f], w))
   imgs_cam = np.array(imgs_cam).flatten()
   print(imgs_cam)
   imgs.append(imgs_cam)
@@ -80,32 +82,100 @@ for cam in cams:
   draw_cam(ax,cam[0],cam[1],cam[2],0.5,fov)
 ax.set_aspect('equal', adjustable='box')
 
+;; functions
+def dproj(param,w):
+  x,y,theta,px,py,f = param
+  w2n = np.eye(3)
+  w2n[:2,:2] = rot(theta).T
+  w2n[:2,2] = -(rot(theta).T @ np.array([[x],[y]])).flatten()
+
+  p = np.array([px, py, 1])
+  p_n = w2n @ p[:,None]
+  img_x = p_n[0]/p_n[1]
+
+  dp_n_px = np.array([w2n[0,0], w2n[1,0]])
+  dp_n_py = np.array([w2n[0,1], w2n[1,1]])
+
+  dimg_x_px = (dp_n_px[0]*p_n[1] - p_n[0]*dp_n_px[1])/(p_n[1]**2)
+  dimg_x_py = (dp_n_py[0]*p_n[1] - p_n[0]*dp_n_py[1])/(p_n[1]**2)
+
+  drot_theta = (np.pi/180)*np.array([
+    [-np.sin(np.pi*theta/180), -np.cos(np.pi*theta/180)],
+    [ np.cos(np.pi*theta/180), -np.sin(np.pi*theta/180)]])
+
+  drot_T_theta = drot_theta.T
+  dw2n_theta = np.zeros((3,3))
+  dw2n_theta[:2,:2] =  drot_T_theta
+  dw2n_theta[0,2] = -x*drot_T_theta[0,0] - y*drot_T_theta[0,1]
+  dw2n_theta[1,2] = -x*drot_T_theta[1,0] - y*drot_T_theta[1,1]
+  dp_n_theta = dw2n_theta @ p[:,None]
+  dimg_x_theta = (dp_n_theta[0]*p_n[1] - p_n[0]*dp_n_theta[1])/(p_n[1]**2)
+
+  dw2n_x = np.zeros((3,3))
+  dw2n_x[0,2] = -(rot(theta).T)[0,0]
+  dw2n_x[1,2] = -(rot(theta).T)[1,0]
+
+  dw2n_y = np.zeros((3,3))
+  dw2n_y[0,2] = -(rot(theta).T)[0,1]
+  dw2n_y[1,2] = -(rot(theta).T)[1,1]
+
+  dp_n_x = dw2n_x @ p[:,None]
+  dp_n_y = dw2n_y @ p[:,None]
+
+  dimg_x_x = (dp_n_x[0]*p_n[1] - p_n[0]*dp_n_x[1])/(p_n[1]**2)
+  dimg_x_y = (dp_n_y[0]*p_n[1] - p_n[0]*dp_n_y[1])/(p_n[1]**2)
+  
+  grad = np.zeros(6)
+  grad[0] = f*dimg_x_x # x
+  grad[1] = f*dimg_x_y # y
+  grad[2] = f*dimg_x_theta # theta
+  grad[3] = f*dimg_x_px # px
+  grad[4] = f*dimg_x_py # py
+  grad[5] = img_x # f
+
+  return grad
+
+; test gradient
+
+;; imports
+np.set_printoptions(suppress=True)
+import scipy.optimize
+
+;; test gradient
+fov = 70
+w = 640
+f = (w/2)/np.tan(np.pi*fov/(180*2))
+params = [cams[0][0],cams[0][1],cams[0][2],pts[0][0],pts[0][1],f]
+print(scipy.optimize.approx_fprime(params, proj, None, w))
+print(dproj(params, w))
+
 ;; solve using lm
-def cost(params, imgs, pts):
+def cost(params, w, imgs, pts):
   param_cams = params[:3*len(cams)].reshape((-1,3))
-  param_fov = params[3*len(cams)]
+  param_f = params[3*len(cams)]
   res = []
   for i, cam in enumerate(param_cams):
     for j,pt in enumerate(pts):
-      p = proj(cam[0], cam[1], cam[2], 640, param_fov, pt[0], pt[1])
+      p = proj(cam[0], cam[1], cam[2], pt[0], pt[1], param_f, w)
       res.append(p - imgs[i,j])
   return res
 
-def dcost(params, imgs, pts):
+def dcost(params, w, imgs, pts):
   param_cams = params[:3*len(cams)].reshape((-1,3))
-  param_fov = params[3*len(cams)]
+  param_f = params[3*len(cams)]
 
   jacobian = np.zeros((imgs.shape[0]*imgs.shape[1], len(params)))
   for i, cam in enumerate(param_cams):
     for j,pt in enumerate(pts):
-      p = proj(cam[0], cam[1], cam[2], 640, param_fov, pt[0], pt[1])
+      p = proj(cam[0], cam[1], cam[2], pt[0], pt[1], param_f, w)
 
 
 init_cams = np.zeros((cams.shape[0], cams.shape[1]))
 for i in range(cams.shape[0]):
   init_cams[i,:] = np.array([0, -4, -20])
 
+w = 640
 init_fov = 50
-init_params = np.concatenate([init_cams.flatten(), [init_fov]])
-true_params = np.concatenate([cams.flatten(), [fov]])
-dcost(init_params, imgs, pts)
+init_f = (w/2)/np.tan(np.pi*init_fov/(180*2))
+init_params = np.concatenate([init_cams.flatten(), [init_f]])
+true_params = np.concatenate([cams.flatten(), [f]])

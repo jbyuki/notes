@@ -2,7 +2,9 @@ Marginals
 ---------
 
 
-Let $f_Y = \int f_{X|Y} f_Y dy$
+Let 
+
+$$f_Y = \int f_{X|Y} f_Y dy$$
 
 With
 

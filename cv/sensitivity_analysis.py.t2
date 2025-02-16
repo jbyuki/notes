@@ -1,0 +1,73 @@
+:: sensitivity_analysis.py
+; imports
+; define functions
+; lay out projection model
+; show results
+
+;; imports
+from sympy import Symbol, Integral, sqrt, sin, diff, cos, latex, symbols
+from sympy.matrices import Matrix, eye, zeros, ones, diag
+from sympy import Quaternion
+from sympy import simplify, expand
+from sympy import Matrix, eye, MatrixSymbol
+
+;; show results
+f,cx,cy = symbols("f c_x c_y")
+k1, k2 = symbols("k_1 k_2")
+qw,qx,qy,qz = symbols("q_w q_x q_y q_z")
+q = Quaternion(qw, qx, qy, qz)
+K = Matrix([[f, 0, cx], [0, f, cy], [0, 0, 1]])
+R = MatrixSymbol("R", 3, 3)
+T = MatrixSymbol("T", 3, 1)
+P = MatrixSymbol("P", 3, 1)
+nz = Symbol("n_z")
+N = Matrix([[0], [0], [nz]])
+
+p_c = P + N
+p_f = Matrix([[p_c[0,0]/p_c[2,0]], [p_c[1,0]/p_c[2,0]]])
+r2 = p_f[0]**2 + p_f[1]**2
+d = 1 + k1*r2
+p_i = K * p_c
+p_i = Matrix([[p_i[0,0]/p_i[2,0]], [p_i[1,0]/p_i[2,0]]])
+p_i_d = p_i*d
+
+;; show results
+p_i_d = simplify(p_i_d)
+disp(p_i_d)
+
+;; show results
+disp(p_i_d)
+
+;; show results
+disp(Matrix([[simplify(diff(p_i_d, cx))], [simplify(diff(p_i_d, cy))], [simplify(diff(p_i_d, f))], [simplify(diff(p_i_d, nz))], [simplify(diff(p_i_d, k1))]]))
+
+;; show results
+disp(p_i)
+
+;; show results
+G = groebner([1-qw**2-qx**2-qy**2-qz**2]).exprs
+
+;; show results
+disp(p_i[0])
+p_i_s = simplify(p_i.subs(qw**2+qx**2+qy**2+qz**2,1))
+disp(p_i_s)
+
+;; define functions
+def simplify_rot(mat,qw,qx,qy,qz):
+  mat = mat.copy()
+  G = groebner([1-qw**2-qx**2-qy**2-qz**2]).exprs
+  for i in range(mat.rows):
+    for j in range(mat.cols):
+      mat[i,j] = ratsimpmodprime(simplify(mat[i,j]), G)
+  return mat
+
+;; imports
+from sympy.simplify.ratsimp import ratsimpmodprime
+from sympy.polys.polytools import groebner
+
+;; show results
+qw,qx,qy,qz = symbols("q_w q_x q_y q_z")
+q = Quaternion(qw, qx, qy, qz)
+p = MatrixSymbol("p", 3,1)
+R = simplify(q.to_rotation_matrix() * q.to_rotation_matrix().T)
+disp(ratsimpmodprime(R[0,0], groebner([1-qw**2-qx**2-qy**2-qz**2]).exprs))

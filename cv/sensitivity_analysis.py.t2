@@ -38,8 +38,49 @@ disp(p_i_d)
 ;; show results
 disp(p_i_d)
 
-;; show results
-disp(Matrix([[simplify(diff(p_i_d, cx))], [simplify(diff(p_i_d, cy))], [simplify(diff(p_i_d, f))], [simplify(diff(p_i_d, nz))], [simplify(diff(p_i_d, k1))]]))
+;; imports
+from sympy import fraction, Add, expand_mul
+
+;; define functions
+def simple_apart(exp):
+  n,d = fraction(exp)
+  result = 0
+  for el in Add.make_args(n):
+    result = result + simplify(el/d)
+  return result
+
+def simple_apart2(exp):
+  n,d = fraction(exp)
+  n = expand_mul(n, deep=False)
+  result = 0
+  for el in Add.make_args(n):
+    result = result + simplify(el/d)
+  return result
+
+def simple_apart3(exp):
+  n,d = fraction(exp)
+  n = expand_mul(n, deep=False)
+  result = 0
+  for i,el in enumerate(Add.make_args(n)):
+    n2, d2 = fraction(simplify(el/d))
+    if i == 0:
+      for el3 in Add.make_args(expand_mul(n2.args[1] * n2.args[2], deep=False)):
+        result = result - simplify(el3/d2)
+    else:
+      n2 = expand_mul(n2, deep=False)
+      for el2 in Add.make_args(n2):
+        result = result + simplify(el2/d2)
+  return result
+
+def simple_apart4(exp):
+  n,d = fraction(exp)
+  result = 0
+  for el in Add.make_args(n):
+    for el2 in Add.make_args(el.args[1]):
+      result = result + simplify((el2*el.args[0])/d)
+  return result
+
+disp(Matrix([[simple_apart(simplify(diff(p_i_d[0], cx)))], [simple_apart2(simplify(diff(p_i_d[0], f)))], [simple_apart3(simplify(diff(p_i_d[0], nz)))], [simple_apart4(simplify(diff(p_i_d[0], k1)))]]))
 
 ;; show results
 disp(p_i)

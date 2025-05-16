@@ -8,7 +8,7 @@ Integration
     
 ### Integration in tangent space (constant angular velocity)
 
-$$q(t + \Delta t) = \frac 1 2 \omega q(t) + q(t)$$
+$$q(t + \Delta t) = \frac 1 2 \omega q(t) \Delta t + q(t)$$
 
 Nice derivation [here](https://fgiesen.wordpress.com/2012/08/24/quaternion-differentiation/)
 

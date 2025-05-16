@@ -29,4 +29,4 @@ dt = 1e-4
 print(R.from_euler('XYZ', [3*dt, 2*dt, 5*dt]).as_rotvec() / dt)
 ```
 
-The underlying assumption being that all gyroscope use this very axis convention (although not mentionned here afaik, so could be wrong).
+The underlying assumption being that all gyroscope use this very axis convention (although not mentionned anywhere afaik, so could be wrong).

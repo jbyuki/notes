@@ -14,7 +14,7 @@ Nice derivation [here](https://fgiesen.wordpress.com/2012/08/24/quaternion-diffe
 
 ### Integration on manifold (constant velocity)
 
-$$q(t + \Delta t) = q(\Delta t * \omega) q(t)$$
+$$q(t + \Delta t) = q(\Delta t \cdot \omega) q(t)$$
 
 ### Clarification on roll-pitch-yaw angular rate vs $\omega$ (axis-angle velocity)
 

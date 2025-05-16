@@ -6,13 +6,13 @@ Integration
 -----------
 
     
-### Integration in tangent space (constant velocity)
+### Integration in tangent space (constant angular velocity)
 
 $$q(t + \Delta t) = \frac 1 2 \omega q(t) + q(t)$$
 
 Nice derivation [here](https://fgiesen.wordpress.com/2012/08/24/quaternion-differentiation/)
 
-### Integration on manifold (constant velocity)
+### Integration on manifold (constant angular velocity)
 
 $$q(t + \Delta t) = q(\Delta t \cdot \omega) q(t)$$
 

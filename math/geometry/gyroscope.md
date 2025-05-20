@@ -35,3 +35,4 @@ IMU Pre-Integration
 -------------------
 
 The derivative of the IMU Preintegration resulting rotation with respect to the gyroscope bias seems linear ?
+  => This happens when the tangent space integration (i.e. just summing angle axis) is approximatively equal to the on-manifold integration.

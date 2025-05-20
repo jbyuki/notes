@@ -30,3 +30,8 @@ print(R.from_euler('XYZ', [3*dt, 2*dt, 5*dt]).as_rotvec() / dt)
 ```
 
 The underlying assumption being that all gyroscope use this very rotation order (although not mentionned anywhere afaik, so could be wrong).
+
+IMU Pre-Integration
+-------------------
+
+The derivative of the IMU Preintegration resulting rotation with respect to the gyroscope bias seems linear ?
